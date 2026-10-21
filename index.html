@@ -10,6 +10,7 @@
 </head>
 
 <body id="top">
+  <a class="skip-link" href="#main-content">Перейти к содержанию</a>
 
   <!-- ==================== ШАПКА С ЯКОРНОЙ НАВИГАЦИЕЙ ==================== -->
   <header class="site-header">
@@ -26,7 +27,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content" tabindex="-1">
 
     <!-- ==================== БЛОК 1. HERO ==================== -->
     <section class="hero">
@@ -227,6 +228,7 @@
           Четыре коротких вопроса. Ответы никуда не отправляются — всё считается прямо в вашем браузере.
         </p>
 
+        <noscript><p class="quiz-fallback">Для мини-теста нужен JavaScript. Вы можете самостоятельно сравнить три проекта в разделе выше.</p></noscript>
         <div class="quiz-box">
           <!-- Сюда JavaScript подставляет вопросы и результат -->
           <div id="quiz-app">
@@ -234,6 +236,7 @@
             <div class="quiz-question" id="quiz-question" role="heading" aria-level="3" tabindex="-1"></div>
             <div class="quiz-options" id="quiz-options"></div>
 
+            <button class="btn btn-outline quiz-back" id="quiz-back" type="button" hidden>Назад к предыдущему вопросу</button>
             <div class="quiz-result" id="quiz-result">
               <div class="res-label">Ваш первый проект</div>
               <h3 id="quiz-result-title" tabindex="-1"></h3>
