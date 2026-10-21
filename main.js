@@ -67,6 +67,7 @@
 
     // Текущее состояние теста
     var currentQuestion = 0;
+    var answers = [];
     var scores = { data: 0, chatbot: 0, vision: 0 };
 
     // Ссылки на элементы страницы
@@ -78,6 +79,8 @@
     var resultTextEl  = document.getElementById("quiz-result-text");
     var gotoBtn    = document.getElementById("quiz-goto");
     var restartBtn = document.getElementById("quiz-restart");
+    var backBtn = document.getElementById("quiz-back");
+    var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     // Отрисовка текущего вопроса
     function renderQuestion(moveFocus) {
@@ -86,17 +89,19 @@
       questionEl.textContent = q.text;
       optionsEl.innerHTML = "";
       resultEl.classList.remove("visible");
+      backBtn.hidden = currentQuestion === 0;
 
-      q.options.forEach(function (opt) {
+      q.options.forEach(function (opt, optionIndex) {
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "quiz-option";
         btn.textContent = opt.label;
         btn.addEventListener("click", function () {
-          // Начисляем баллы проектам за выбранный ответ
-          for (var key in opt.points) {
-            scores[key] += opt.points[key];
-          }
+          answers[currentQuestion] = optionIndex;
+          scores = { data: 0, chatbot: 0, vision: 0 };
+          answers.forEach(function (answer, index) {
+            for (var key in scores) { scores[key] += QUESTIONS[index].options[answer].points[key] || 0; }
+          });
           currentQuestion++;
           if (currentQuestion < QUESTIONS.length) {
             renderQuestion(true);
@@ -118,13 +123,15 @@
         if (scores[key] > scores[winner]) { winner = key; }
       }
       var res = RESULTS[winner];
+      var tied = Object.keys(scores).filter(function (key) { return scores[key] === scores[winner]; });
+      backBtn.hidden = false;
 
       progressEl.textContent = "Готово!";
       questionEl.textContent = "";
       optionsEl.innerHTML = "";
 
       resultTitleEl.textContent = res.title;
-      resultTextEl.textContent = res.text;
+      resultTextEl.textContent = res.text + (tied.length > 1 ? " Несколько направлений набрали одинаковый балл: " + tied.map(function (key) { return RESULTS[key].title; }).join(", ") + ". Показан первый из них в порядке карточек; сравните варианты и выберите интересующий." : "");
       gotoBtn.setAttribute("data-target", res.target);
       resultEl.classList.add("visible");
       resultTitleEl.focus({ preventScroll: true });
@@ -138,17 +145,25 @@
       document.querySelectorAll(".project-card").forEach(function (c) {
         c.classList.remove("highlight");
       });
-      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      card.scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "center" });
       card.setAttribute("tabindex", "-1");
       card.focus({ preventScroll: true });
       // Подсвечиваем карточку после начала прокрутки
-      setTimeout(function () { card.classList.add("highlight"); }, 400);
+      setTimeout(function () { card.classList.add("highlight"); }, reducedMotion.matches ? 0 : 400);
     });
 
     // Кнопка «Пройти ещё раз»: сброс состояния теста
     restartBtn.addEventListener("click", function () {
       currentQuestion = 0;
+      answers = [];
       scores = { data: 0, chatbot: 0, vision: 0 };
+      renderQuestion(true);
+    });
+
+    backBtn.addEventListener("click", function () {
+      if (currentQuestion === 0) { return; }
+      currentQuestion--;
+      answers = answers.slice(0, currentQuestion);
       renderQuestion(true);
     });
 

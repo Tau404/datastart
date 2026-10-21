@@ -568,3 +568,12 @@
 .project-photo { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; margin: 14px 0 18px; }
 .photo-credit { margin-top: 16px; font-size: .85rem; }
 .photo-credit a { color: inherit; text-decoration: underline; }
+
+.skip-link { position: fixed; top: 8px; left: 12px; transform: translateY(-180%); z-index: 100; background: #fff; color: #3730a3; border: 2px solid currentColor; padding: 10px 16px; border-radius: 8px; }
+.skip-link:focus { transform: none; }
+.quiz-back { margin-top: 20px; }
+[hidden] { display: none !important; }
+.quiz-fallback { padding: 20px; border: 1px solid var(--border); margin-bottom: 16px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
